@@ -18,7 +18,7 @@ def train():
 
     # check there is data in the trainingData folder
 
-    if len(trainingData) < 1:
+    if not trainingData:
         print(
             "The folder training/facts should be populated with at least one .txt or .md file.",
             file=sys.stderr,
