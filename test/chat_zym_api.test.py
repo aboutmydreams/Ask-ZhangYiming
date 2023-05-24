@@ -1,8 +1,19 @@
 import requests
 import json
 import time
+import os
+
+# 获取当前脚本所在目录的绝对路径
+current_dir = os.path.dirname(os.path.abspath(__file__))
+print(current_dir)
 
 url = "http://127.0.0.1:5000/chat"
+
+
+def append_str_to_file(s):
+    with open(f"{current_dir}/text.txt", "a", encoding="utf-8") as f:
+        f.write(s + "\n")
+    f.close()
 
 
 def ask_question_about_zym(q: str):
@@ -24,9 +35,14 @@ def ask_question_about_zym(q: str):
     headers = {"Content-Type": "application/json"}
 
     try:
-        print(f"user question: {q}. waiting...")
+        ask_info = f"user question: {q}. waiting..."
+        append_str_to_file(ask_info)
+        print(ask_info)
         response = requests.request("POST", url, headers=headers, data=payload)
-        print(f'gpt: {response.json()["data"]["answer"]}')
+        answer_info = f'gpt: {response.json()["data"]["answer"]}'
+        append_str_to_file(answer_info)
+        print(answer_info)
+
         return response.text
     except Exception as e:
         return f"ask_question_about_zym error: {str(e)}"
