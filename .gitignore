@@ -1,0 +1,7 @@
+.venv
+__pycache__
+venv
+.env
+.DS_Store
+training/models/*
+training/facts/*
