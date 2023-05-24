@@ -39,9 +39,7 @@ def train():
     # 使用我们定义的 TrainInputs 类进行参数验证，如果有错误则返回 400 状态码及错误信息
     inputs = TrainInputs(request)
     if not inputs.validate():
-        errors = []
-        for error in inputs.errors:
-            errors.append({"message": error.message})
+        errors = [{"message": error.message} for error in inputs.errors]
         return jsonify({"errors": errors}), 400
 
     try:
@@ -49,8 +47,8 @@ def train():
         file_list = request.json["file_list"]
         space_name = request.json["space_name"]
         file_tag = request.json["file_tag"]
-        index_path = "./training/models/{}.index".format(space_name)
-        pkl_path = "./training/models/{}.pkl".format(space_name)
+        index_path = f"./training/models/{space_name}.index"
+        pkl_path = f"./training/models/{space_name}.pkl"
 
         trainingData = []
 
@@ -73,7 +71,7 @@ def train():
                 trainingData.append(use_text)
                 data_file.close()
         # 判断是否获取到训练数据，如果 trainingData 列表为空，则返回错误信息和 400 状态码
-        if len(trainingData) < 1:
+        if not trainingData:
             return jsonify({"error": "No training data found"}), 400
         # 初始化文本拆分器和嵌入向量计算工具，并使用从文件中获取的训练数据创建向量存储器
         textSplitter = CharacterTextSplitter(chunk_size=2000, separator="\n")
@@ -126,9 +124,7 @@ def upload_prompt():
     # 使用我们定义的 PromptUploadInput 类进行参数验证，如果有错误则返回 400 状态码及错误信息
     inputs = PromptUploadInput(request)
     if not inputs.validate():
-        errors = []
-        for error in inputs.errors:
-            errors.append({"message": error.message})
+        errors = [{"message": error.message} for error in inputs.errors]
         return jsonify({"errors": errors}), 400
 
     try:
@@ -141,7 +137,7 @@ def upload_prompt():
                 return jsonify({"code": 1, "msg": "file is not txt"}), 400
             r = requests.get(url)
             if r.status_code == 200:
-                file_save_path = "./training/prompt/{}".format(url.split("/")[-1])
+                file_save_path = f'./training/prompt/{url.split("/")[-1]}'
                 with open(file_save_path, "w", encoding="utf-8") as data_file:
                     data_file.write(r.text)
                     data_file.close()
@@ -186,9 +182,7 @@ class ChatInputs(Inputs):
 def chat():
     inputs = ChatInputs(request)
     if not inputs.validate():
-        errors = []
-        for error in inputs.errors:
-            errors.append({"message": error.message})
+        errors = [{"message": error.message} for error in inputs.errors]
         return jsonify({"errors": errors}), 400
     try:
         # 获取请求参数
@@ -199,12 +193,12 @@ def chat():
         prompt_name = request.json["prompt_name"] if "prompt_name" in request.json.keys() else "master"
 
         # 从文件中读取搜索引擎、向量空间等信息
-        index = faiss.read_index("./training/models/{}.index".format(space_name))
-        with open("./training/models/{}.pkl".format(space_name), "rb") as f:
+        index = faiss.read_index(f"./training/models/{space_name}.index")
+        with open(f"./training/models/{space_name}.pkl", "rb") as f:
             store = pickle.load(f)
         store.index = index
 
-        with open("training/prompt/{}.txt".format(prompt_name), "r") as f:
+        with open(f"training/prompt/{prompt_name}.txt", "r") as f:
             promptTemplate = f.read()
             f.close()
 
@@ -224,9 +218,7 @@ def chat():
 
         # 通过搜索引擎获取文本上下文信息，结合模型产生回答
         docs = store.similarity_search(question)
-        contexts = []
-        for i, doc in enumerate(docs):
-            contexts.append(f"Context {i}:\n{doc.page_content}")
+        contexts = [f"Context {i}:\n{doc.page_content}" for i, doc in enumerate(docs)]
         answer = llmChain.predict(
             question=question, context="\n\n".join(contexts), history=history
         )

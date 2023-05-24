@@ -4,7 +4,7 @@ from langdetect import detect
 
 def get_language_type(text) -> str:
     language = detect(text)
-    print(language, text[:10 if len(text) > 10 else len(text)])
+    print(language, text[:min(len(text), 10)])
     return language
 
 def translate(text, dest='en') -> str:

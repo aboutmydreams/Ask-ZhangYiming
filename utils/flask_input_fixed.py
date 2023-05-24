@@ -32,12 +32,12 @@ class Inputs(object):
         self.errors = []
 
         self._request = request
-        self._forms = dict()
+        self._forms = {}
 
         for name in dir(self):
             if not name.startswith('_') and name not in ['errors', 'validate', 'valid_attrs']:
                 input = getattr(self, name)
-                fields = dict()
+                fields = {}
 
                 if isinstance(input, dict):
                     for field, validators in iteritems(input):
@@ -62,10 +62,7 @@ class Inputs(object):
             else:
                 ret = getattr(self._request, attribute)
 
-            if coerse:
-                return MultiDict(ret)
-            else:
-                return MultiDict(dict(_input=ret))
+            return MultiDict(ret) if coerse else MultiDict(dict(_input=ret))
 
     def validate(self):
         """Validate incoming request data. Returns True if all data is valid.
