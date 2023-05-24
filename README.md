@@ -5,35 +5,34 @@
 [![label](https://img.shields.io/badge/aiis.life-AI%20is%20life-orange)](https://www.aiis.life)
 [![label](https://img.shields.io/badge/NonceGeek-cool--oriented%20programming-orange)](https://noncegeek.com)
 
+本项目是一个基于 OpenAI，适用于企业私有化数据微调的聊天机器人，能够回答用户提出的各种和企业产品相关的问题。使用 OpenAI 的 API 进行语言模型的训练和生成，使用 Faiss 进行文本搜索和相似度匹配，支持从本地文件或 URL 获取训练数据。本项目为 [Custom-Company-Chatbot](https://replit.com/@DavidAtReplit/Custom-Company-Chatbot) 的增强版，受原项目启发，扩展了从网络以及本地获取 train 的私有数据 (注意，原理上讲，这不是真正训练，而是找到相关的上下文后再告诉 GPT)。感谢 [@leeduckgo](https://github.com/leeduckgo) 的激励支持。
 
+## 使用步骤
 
-This project is a chatbot based on OpenAI, suitable for enterprise privatized data fine-tuning. It can answer various questions related to enterprise products raised by users. It uses OpenAI's API for language model training and generation, and uses Faiss for text search and similarity matching. It supports getting training data from local files or URLs. This project is an enhanced version of [Custom-Company-Chatbot](https://replit.com/@DavidAtReplit/Custom-Company-Chatbot), inspired by the original project, extending the private data acquired from the network and locally (in principle, this is not true training, but finding relevant contexts and then telling GPT). Thanks to [@leeduckgo](https://github.com/leeduckgo) for the inspiring support.
+1. 在 .env 文件中添加 `API_SECRET=MySecret` 和 `OPENAI_API_KEY=<your-key>`，其中 `<your-key>` 为你的 OpenAI API key。
+2. 使用 poetry 安装项目所需的依赖，
+    - `pip install poetry`
+    - `poetry install`
+    - `poetry shell`
+3. 启动虚拟环境，运行 `python3 main.py` 选择 1，将生成的模型文件修改为 zym.index zym.pkl 移动到 ./training/models 。
+4. 运行 `python3 main_api.py` 运行后端，新建命令行执行:
+    - `cd ./test`
+    - `python3 chat_zym_api.test.py` 查看回答
 
-## Steps to use
-
-1. Add `API_SECRET=MySecret` and `OPENAI_API_KEY=<your-key>` to the .env file, where `<your-key>` is your [OpenAI API Key](https://beta.openai.com/account/api-keys).
-2. Install the required dependencies for the project using poetry,
-   - `pip install poetry`
-   - `poetry install`
-   - `poetry shell`
-3. Activate the virtual environment and run `python3 main_api.py`.
-4. Use an HTTP POST request to send a training request to [http://localhost:5000/train](http://localhost:5000/train), passing in the file list of training data and the model name.
-5. Use an HTTP POST request to send a chat request to [http://localhost:5000/chat](http://localhost:5000/chat), passing in the model name, question, and history.
-
-## API Documentation
+## API 接口文档
 
 ### /train
 
-This interface is used for language model training.
+该接口用于将数据在本地储存为向量空间
 
-#### Request
+#### 请求
 
-- Method: POST
-- Request body: JSON format
-- Request body parameters:
-  - file_list: A list of files to be trained
-  - space_name: The vector space name
-  - file_tag: `url` (network txt data) or `path` (local data) for the data
+- 方法: POST
+- 请求体: JSON 格式
+- 请求体参数:
+  - file_list: 要训练的文件列表
+  - space_name: 向量空间名称
+  - file_tag: url(网络 txt 数据) or path(本地数据)
 
 ```json
 {
@@ -43,13 +42,13 @@ This interface is used for language model training.
 }
 ```
 
-#### Response
+#### 响应
 
-- Status code: 200
-- Response body: JSON format
-- Response body parameters:
-  - code: status message 0 normal, 1 abnormal
-  - data: data
+- 状态码: 200
+- 响应体: JSON 格式
+- 响应体参数:
+  - code: 状态信息 0 正常，1 异常
+  - data: 数据
   - msg: success
 
 ```json
@@ -67,17 +66,17 @@ This interface is used for language model training.
 
 ### /chat
 
-This API is used for chatbot conversations.
+该接口用于进行聊天。
 
-#### chat request
+#### chat 请求
 
-- Method: POST
-- Request Body: JSON format
-- Request Body Parameters:
-  - space_name: the name of the vector space stored locally
-  - question: the question being asked
-  - history: the conversation history
-  - model_name: the model name, eg: text-davinci-003, gpt-3.5-turbo, gpt-3.5-turbo-0301, you can try more language generation models in the [Model List](https://platform.openai.com/docs/models) and check the pricing of different models in the [Pricing List](https://openai.com/pricing).
+- 方法: POST
+- 请求体: JSON 格式
+- 请求体参数:
+  - space_name: 本地数据储存的向量空间名称
+  - question: 问题
+  - history: 历史记录
+  - model_name: 模型名称, eg: text-davinci-003, gpt-3.5-turbo, gpt-3.5-turbo-0301, 你可以在 [模型列表](https://platform.openai.com/docs/models) 中尝试更多语言生成模型，以及在 [价格列表](https://openai.com/pricing) 中查询不同模型的价格。
 
 ```json
 {
@@ -88,13 +87,13 @@ This API is used for chatbot conversations.
 }
 ```
 
-#### chat response
+#### chat 响应
 
-- Status Code: 200
-- Response Body: JSON format
-- Response Body Parameters:
-  - code: status information 0 normal, 1 exception
-  - data: data
+- 状态码: 200
+- 响应体: JSON 格式
+- 响应体参数:
+  - code: 状态信息 0 正常，1 异常
+  - data: 数据
   - msg: success
 
 ```json
@@ -113,13 +112,13 @@ This API is used for chatbot conversations.
 }
 ```
 
-## Notes
+## 注意事项
 
-- This project is built with Python 3.10 and is for learning and research purposes only. Please do not use it for any purposes that could harm the social environment.
-- If you have a large amount of text, it will take a long time to train and require a lot of computing resources.
-- Please read the documentation and code carefully before using it, and make sure that the API key and training data are properly configured.
+- 本项目由 python3.10 构建，仅供学习和研究使用，请勿用于破坏社会环境的用途。
+- 若文本数量较大，需要较长时间的训练时间和大量的计算资源。
+- 使用前请仔细阅读文档和代码，并确保已经正确配置 API key 和训练数据。
 
-Welcome to join the early Custom AI Chinese community
+欢迎加入早期的 Custom AI 中文社区
 
 <p>
   <img alt="QQ-Group" src="https://cdn.nlark.com/yuque/0/2023/png/164272/1680279312300-35636818-45ad-41ce-b0c7-d86aba020a2e.png?x-oss-process=image%2Fresize%2Cw_962%2Climit_0" width="300" style="border-radius: 10%;">
