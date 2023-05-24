@@ -17,7 +17,7 @@
 3. 启动虚拟环境，运行 `python3 main.py` 选择 1，将生成的模型文件修改为 zym.index zym.pkl 移动到 ./training/models 。
 4. 运行 `python3 main_api.py` 运行后端，新建命令行执行:
     - `cd ./test`
-    - `python3 chat_zym_api.test.py` 查看回答， 如果全程没有报错，正常情况你会看到 test 文件夹下多了一个 text.txt 保存了指定问题和回答内容
+    - `python3 chat_zym_api.test.py` 查看回答， 如果全程没有报错，正常情况你会看到 `test` 文件夹下多了一个 `text.txt` 保存了指定问题和回答内容
 
 ## API 接口文档
 
@@ -117,10 +117,3 @@
 - 本项目由 python3.10 构建，仅供学习和研究使用，请勿用于破坏社会环境的用途。
 - 若文本数量较大，需要较长时间的训练时间和大量的计算资源。
 - 使用前请仔细阅读文档和代码，并确保已经正确配置 API key 和训练数据。
-
-欢迎加入早期的 Custom AI 中文社区
-
-<p>
-  <img alt="QQ-Group" src="https://cdn.nlark.com/yuque/0/2023/png/164272/1680279312300-35636818-45ad-41ce-b0c7-d86aba020a2e.png?x-oss-process=image%2Fresize%2Cw_962%2Climit_0" width="300" style="border-radius: 10%;">
-  <img alt="WX-Group" src="https://cdn.nlark.com/yuque/0/2023/png/164272/1680278249286-59ac3cbd-a27b-4c54-87a1-3dd6f9cd46e0.png" width="300" style="border-radius: 10%;">
-</p>
